@@ -2,7 +2,7 @@
  * jQuery Conditions 1.0.0
  *
  * Copyright 2016 Bejamin Rojas
- * Released under the MIT license.
+ * @license Released under the MIT license.
  * http://jquery.org/license
  */
 (function($) {
@@ -38,7 +38,7 @@
 
 		$(that.element).on('keyup', function() {
 			that.showAndHide();
-		})
+		});
 		
 		//Show based on current value on page load
 		that.showAndHide(true);
@@ -55,7 +55,7 @@
 			
 			$.each(val, function(i, v) {
 
-				if(v.name == that.element.attr('name')) {
+				if(v.name === that.element.attr('name')) {
 
 					if(that.element.is(':checkbox')) {
 						that.checkboxShowHide(v);
@@ -131,7 +131,7 @@
 
 	ConditionsJS.prototype.radioShowHide = function(v) {
 		var that = this;
-		if(v.value == that.element.val() && that.element.is(':checked')) {
+		if(v.value === that.element.val() && that.element.is(':checked')) {
 			if(v.show && (!v.startHidden || (!that._init))) {
 				$(v.show).each(function() {
 					that._show($(this), v.effect);
@@ -143,7 +143,7 @@
 				});
 			}
 		}
-		else if(v.value == that.element.val() && !that.element.is(':checked')) {
+		else if(v.value === that.element.val() && !that.element.is(':checked')) {
 			if(v.show && (!v.startHidden || (!that._init))) {
 				$(v.show).each(function() {
 					that._show($(this), v.effect);
@@ -159,7 +159,7 @@
 
 	ConditionsJS.prototype.selectShowHide = function(v) {
 		var that = this;
-		if(v.value == that.element.val()) {
+		if(v.value === that.element.val()) {
 			if(v.show && (!v.startHidden || (!that._init))) {
 				$(v.show).each(function() {
 					that._show($(this), v.effect);
@@ -176,7 +176,7 @@
 	ConditionsJS.prototype.inputShowHide = function(v) {
 		var that = this;
 		if(!v.reverse) {
-			if(v.value == that.element.val()) {
+			if(v.value === that.element.val()) {
 				if(v.show && (!v.startHidden || (!that._init))) {
 					$(v.show).each(function() {
 						that._show($(this), v.effect);
@@ -197,7 +197,7 @@
 			}
 		}
 		else {
-			if(v.value == that.element.val()) {
+			if(v.value === that.element.val()) {
 				if(v.hide) {
 					$(v.hide).each(function() {
 						that._hide($(this), v.effect);
@@ -272,7 +272,8 @@
 	};
 
 	$.fn.conditions.defaults = {
-		value:			true,
+		name:			null,
+		value:			null,
 		show:			null,
 		hide:			null,
 		effect:			'appear',
