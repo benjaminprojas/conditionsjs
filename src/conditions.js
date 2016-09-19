@@ -16,40 +16,38 @@
 		that.settings	= {};
 		that._init		= false;
 
-		if($.isArray(args)) {
-			// multiple elements
-			$.each(args, function(i, v) {
-				v = $.extend({}, that.defaults, v);
+		if(!$.isEmptyObject(that.settings[that.index])) {
+			return;
+		}
 
-				if(!v.name) {
-					v.name = that.element.attr('name');
-				}
+		if(!$.isArray(args)) {
+			args = [ args ];
+		}
 
+		$.each(args, function(i, v) {
+
+			v = $.extend({}, that.defaults, v);
+
+			if(!v.name) {
+				v.name = that.element.attr('name');
+			}
+
+			if(!$.isArray(v.value)) {
+				v.value = [ v.value ];
+			}
+
+			$.each(v.value, function(ind, val) {
+				v.value = val;
 				if($.isEmptyObject(that.settings[that.index])) {
 					that.settings[that.index] = {};
 				}
 				if($.isEmptyObject(that.settings[that.index][v.name])) {
 					that.settings[that.index][v.name] = {};
 				}
-				that.settings[that.index][v.name][v.value] = v;
+				that.settings[that.index][v.name][val] = v;
+
 			});
-		}
-		else {
-			// one element
-			var v = $.extend({}, that.defaults, args);
-
-			if(!v.name) {
-				v.name = that.element.attr('name');
-			}
-
-			if($.isEmptyObject(that.settings[that.index])) {
-				that.settings[that.index] = {};
-			}
-			if($.isEmptyObject(that.settings[that.index][v.name])) {
-				that.settings[that.index][v.name] = {};
-			}
-			that.settings[that.index][v.name][v.value] = v;
-		}
+		});
 
 	};
 
@@ -77,22 +75,22 @@
 		}
 
 		$.each(this.settings[that.index], function(ind, val) {
-			
+
 			$.each(val, function(i, v) {
 
 				if(v.name === that.element.attr('name')) {
 
 					if(that.element.is(':checkbox')) {
-						that.checkboxShowHide(v);
+						that.checkboxShowHide(i, v);
 					}
 					else if(that.element.is(':radio')) {
-						that.radioShowHide(v);
+						that.radioShowHide(i, v);
 					}
 					else if(that.element.is('select')) {
-						that.selectShowHide(v);
+						that.selectShowHide(i, v);
 					}
 					else if(that.element.is('input') || that.element.is('textarea')) {
-						that.inputShowHide(v);
+						that.inputShowHide(i, v);
 					}
 
 				}
@@ -103,7 +101,7 @@
 
 	};
 
-	ConditionsJS.prototype.checkboxShowHide = function(v) {
+	ConditionsJS.prototype.checkboxShowHide = function(i, v) {
 		var that = this;
 		if(!v.reverse) {
 			if(that.element.is(':checked')) {
@@ -154,9 +152,9 @@
 		}
 	};
 
-	ConditionsJS.prototype.radioShowHide = function(v) {
+	ConditionsJS.prototype.radioShowHide = function(i, v) {
 		var that = this;
-		if(v.value === that.element.val() && that.element.is(':checked')) {
+		if(i === that.element.val() && that.element.is(':checked')) {
 			if(v.show && (!v.startHidden || (!that._init))) {
 				$(v.show).each(function() {
 					that._show($(this), v.effect);
@@ -168,7 +166,7 @@
 				});
 			}
 		}
-		else if(v.value === that.element.val() && !that.element.is(':checked')) {
+		else if(i === that.element.val() && !that.element.is(':checked')) {
 			if(v.show && (!v.startHidden || (!that._init))) {
 				$(v.show).each(function() {
 					that._show($(this), v.effect);
@@ -182,9 +180,9 @@
 		}
 	};
 
-	ConditionsJS.prototype.selectShowHide = function(v) {
+	ConditionsJS.prototype.selectShowHide = function(i, v) {
 		var that = this;
-		if(v.value === that.element.val()) {
+		if(i === that.element.val()) {
 			if(v.show && (!v.startHidden || (!that._init))) {
 				$(v.show).each(function() {
 					that._show($(this), v.effect);
@@ -198,10 +196,10 @@
 		}
 	};
 
-	ConditionsJS.prototype.inputShowHide = function(v) {
+	ConditionsJS.prototype.inputShowHide = function(i, v) {
 		var that = this;
 		if(!v.reverse) {
-			if(v.value === that.element.val()) {
+			if(i === that.element.val()) {
 				if(v.show && (!v.startHidden || (!that._init))) {
 					$(v.show).each(function() {
 						that._show($(this), v.effect);
@@ -222,7 +220,7 @@
 			}
 		}
 		else {
-			if(v.value === that.element.val()) {
+			if(i === that.element.val()) {
 				if(v.hide) {
 					$(v.hide).each(function() {
 						that._hide($(this), v.effect);
