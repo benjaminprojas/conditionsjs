@@ -16,15 +16,40 @@
 		that.settings	= {};
 		that._init		= false;
 
-		$.each(args, function(i, v) {
+		if($.isArray(args)) {
+			// multiple elements
+			$.each(args, function(i, v) {
+				v = $.extend({}, that.defaults, v);
+
+				if(!v.name) {
+					v.name = that.element.attr('name');
+				}
+
+				if($.isEmptyObject(that.settings[that.index])) {
+					that.settings[that.index] = {};
+				}
+				if($.isEmptyObject(that.settings[that.index][v.name])) {
+					that.settings[that.index][v.name] = {};
+				}
+				that.settings[that.index][v.name][v.value] = v;
+			});
+		}
+		else {
+			// one element
+			var v = $.extend({}, that.defaults, args);
+
+			if(!v.name) {
+				v.name = that.element.attr('name');
+			}
+
 			if($.isEmptyObject(that.settings[that.index])) {
 				that.settings[that.index] = {};
 			}
 			if($.isEmptyObject(that.settings[that.index][v.name])) {
 				that.settings[that.index][v.name] = {};
 			}
-			that.settings[that.index][v.name][v.value] = $.extend({}, that.defaults, v);
-		});
+			that.settings[that.index][v.name][v.value] = v;
+		}
 
 	};
 
@@ -238,7 +263,7 @@
 					element.slideDown();
 					break;
 				case 'fade':
-					element.fadeIn();
+					element.fadeIn( 300 );
 					break;
 			}
 		}
@@ -258,7 +283,7 @@
 					element.slideUp();
 					break;
 				case 'fade':
-					element.fadeOut();
+					element.fadeOut( 300 );
 					break;
 			}
 		}
@@ -276,7 +301,7 @@
 		value:			null,
 		show:			null,
 		hide:			null,
-		effect:			'appear',
+		effect:			'fade',
 		startHidden:	false,
 		reverse:		false
 	};
