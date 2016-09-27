@@ -51,20 +51,47 @@ Then use the following code:
 // Using an array of objects
 $( 'select[name=example2]' ).conditions( [
 	{
-		value:       '1',
-		show:        '.example2-value1'
-		hide:        '.example2-value2',
-		effect:      'appear',
-		startHidden: true
+		conditions: {
+			element:	$('select[name=example2]'),
+			type:		'value',
+			operator:	'=',
+			condition:	'1'
+		},
+		actions: {
+			if: [
+				{
+					element:	'.example2-value1',
+					action:		'show'
+				},
+				{
+					element:	'.example2-value2',
+					action:		'hide'
+				}
+			]
+		}
 	},
 	{
-		value:       '2',
-		show:        '.example2-value2',
-		hide:        '.example2-value1',
-		effect:      'slide',
-		startHidden: true
+		conditions: {
+			element:	$('select[name=example2]'),
+			type:		'value',
+			operator:	'=',
+			condition:	'2'
+		},
+		actions: {
+			if: [
+				{
+					element:	'.example2-value2',
+					action:		'show'
+				},
+				{
+					element:	'.example2-value1',
+					action:		'hide'
+				}
+			]
+		}
 	}
 ] );
+
 ```
 
 ## Options
