@@ -8,45 +8,37 @@
 (function($) {
 	"use strict";
 
-	var ConditionsJS = function(index, element, defaults, args) {
+	$.fn.conditions = function(conditions) {
+		return this.each( function(index, element) {
+			var CJS = new ConditionsJS(element, conditions, $.fn.conditions.defaults);
+			CJS.init();
+		});
+	};
+
+	$.fn.conditions.defaults = {
+		condition:	null,
+		actions:	{},
+		effect:		'fade'
+	};
+
+	var ConditionsJS = function(element, conditions, defaults) {
 		var that = this;
-		that.index		= index;
+
 		that.element	= $(element);
 		that.defaults	= defaults;
-		that.settings	= {};
+		that.conditions	= conditions;
 		that._init		= false;
 
-		if(!$.isEmptyObject(that.settings[that.index])) {
-			return;
+		if(!$.isArray(that.conditions)) {
+			that.conditions = [that.conditions];
 		}
 
-		if(!$.isArray(args)) {
-			args = [ args ];
-		}
-
-		$.each(args, function(i, v) {
+		$.each(that.conditions, function(i, v) {
 
 			v = $.extend({}, that.defaults, v);
 
-			if(!v.name) {
-				v.name = that.element.attr('name');
-			}
+			that.conditions[i] = v;
 
-			if(!$.isArray(v.value)) {
-				v.value = [ v.value ];
-			}
-
-			$.each(v.value, function(ind, val) {
-				v.value = val;
-				if($.isEmptyObject(that.settings[that.index])) {
-					that.settings[that.index] = {};
-				}
-				if($.isEmptyObject(that.settings[that.index][v.name])) {
-					that.settings[that.index][v.name] = {};
-				}
-				that.settings[that.index][v.name][val] = v;
-
-			});
 		});
 
 	};
@@ -56,199 +48,123 @@
 		that._init = true;
 		// Set up event listener
 		$(that.element).on('change', function() {
-			that.showAndHide();
+			that.matchConditions();
 		});
 
 		$(that.element).on('keyup', function() {
-			that.showAndHide();
+			that.matchConditions();
 		});
 		
 		//Show based on current value on page load
-		that.showAndHide(true);
+		that.matchConditions(true);
 	};
 
-	ConditionsJS.prototype.showAndHide = function(init) {
-
+	ConditionsJS.prototype.matchConditions = function(init) {
 		var that = this;
+
 		if(!init) {
 			that._init = false;
 		}
 
-		$.each(this.settings[that.index], function(ind, val) {
+		$.each(that.conditions, function(ind, cond) {
 
-			$.each(val, function(i, v) {
+			var condition_matches = false, all_conditions_match = true;
 
-				if(v.name === that.element.attr('name')) {
+			if(!$.isArray(cond.conditions)) {
+				cond.conditions = [cond.conditions];
+			}
 
-					if(that.element.is(':checkbox')) {
-						that.checkboxShowHide(i, v);
-					}
-					else if(that.element.is(':radio')) {
-						that.radioShowHide(i, v);
-					}
-					else if(that.element.is('select')) {
-						that.selectShowHide(i, v);
-					}
-					else if(that.element.is('input') || that.element.is('textarea')) {
-						that.inputShowHide(i, v);
-					}
+			$.each(cond.conditions, function(i, c) {
 
+				switch(c.type) {
+					case 'value':
+					case 'val':
+						switch(c.operator) {
+							case '===':
+							case '==':
+							case '=':
+								condition_matches = c.element.val() === c.condition;
+								break;
+							case '!==':
+							case '!=':
+								condition_matches = c.element.val() !== c.condition;
+								break;
+							case 'array':
+								condition_matches = $.inArray( c.element.val(), c.condition ) !== -1;
+								break;
+							case '!array':
+								condition_matches = $.inArray( c.element.val(), c.condition ) === -1;
+								break;
+						}
+						break;
+					case 'checked':
+						switch(c.operator) {
+							case 'is':
+								condition_matches = c.element.is(':checked');
+								break;
+							case '!is':
+								condition_matches = !c.element.is(':checked');
+								break;
+						}
+				}
+
+				if(!condition_matches && all_conditions_match) {
+					all_conditions_match = false;
 				}
 
 			});
-			
+
+			if(all_conditions_match) {
+
+				if(!$.isEmptyObject(cond.actions.if)) {
+
+					if(!$.isArray(cond.actions.if)) {
+						cond.actions.if = [cond.actions.if];
+					}
+
+					$.each(cond.actions.if, function(i, condition) {
+						that.showAndHide(condition, cond.effect);
+					});
+
+				}
+
+			}
+			else {
+
+				if(!$.isEmptyObject(cond.actions.else)) {
+
+					if(!$.isArray(cond.actions.else)) {
+						cond.actions.else = [cond.actions.else];
+					}
+					
+					$.each(cond.actions.else, function(i, condition) {
+						that.showAndHide(condition, cond.effect);
+					});
+
+				}
+
+			}
+
 		});
 
 	};
 
-	ConditionsJS.prototype.checkboxShowHide = function(i, v) {
+	ConditionsJS.prototype.showAndHide = function(condition, effect) {
 		var that = this;
-		if(!v.reverse) {
-			if(that.element.is(':checked')) {
-				if(v.show && (!v.startHidden || (!that._init))) {
-					$(v.show).each(function() {
-						that._show($(this), v.effect);
-					});
-				}
-				else if(that._init && v.hide) {
-					$(v.hide).each(function() {
-						that._hide($(this), v.effect);
-					});
-				}
-			}
-			else {
-				if(v.hide) {
-					$(v.hide).each(function() {
-						that._hide($(this), v.effect);
-					});
-				}
-			}
-		}
-		else {
-			if(that.element.is(':checked')) {
-				if(v.hide) {
-					$(v.hide).each(function() {
-						that._hide($(this), v.effect);
-					});
-				}
-				else if(that._init && v.show && !v.startHidden) {
-					$(v.show).each(function() {
-						that._show($(this), v.effect);
-					});
-				}
-			}
-			else {
-				if(v.show) {
-					$(v.show).each(function() {
-						that._show($(this), v.effect);
-					});
-				}
-				if(that._init && v.hide && v.startHidden) {
-					$(v.hide).each(function() {
-						that._hide($(this), v.effect);
-					});
-				}
-			}
-		}
-	};
 
-	ConditionsJS.prototype.radioShowHide = function(i, v) {
-		var that = this;
-		if(i === that.element.val() && that.element.is(':checked')) {
-			if(v.show && (!v.startHidden || (!that._init))) {
-				$(v.show).each(function() {
-					that._show($(this), v.effect);
-				});
-			}
-			if(v.hide) {
-				$(v.hide).each(function() {
-					that._hide($(this), v.effect);
-				});
-			}
+		switch(condition.action) {
+			case 'show':
+				that._show($(condition.element), effect);
+				break;
+			case 'hide':
+				that._hide($(condition.element), effect);
 		}
-		else if(i === that.element.val() && !that.element.is(':checked')) {
-			if(v.show && (!v.startHidden || (!that._init))) {
-				$(v.show).each(function() {
-					that._show($(this), v.effect);
-				});
-			}
-			if(v.hide) {
-				$(v.hide).each(function() {
-					that._hide($(this), v.effect);
-				});
-			}
-		}
-	};
 
-	ConditionsJS.prototype.selectShowHide = function(i, v) {
-		var that = this;
-		if(i === that.element.val()) {
-			if(v.show && (!v.startHidden || (!that._init))) {
-				$(v.show).each(function() {
-					that._show($(this), v.effect);
-				});
-			}
-			if(v.hide) {
-				$(v.hide).each(function() {
-					that._hide($(this), v.effect);
-				});
-			}
-		}
-	};
-
-	ConditionsJS.prototype.inputShowHide = function(i, v) {
-		var that = this;
-		if(!v.reverse) {
-			if(i === that.element.val()) {
-				if(v.show && (!v.startHidden || (!that._init))) {
-					$(v.show).each(function() {
-						that._show($(this), v.effect);
-					});
-				}
-				else if(that._init && v.hide) {
-					$(v.hide).each(function() {
-						that._hide($(this), v.effect);
-					});
-				}
-			}
-			else {
-				if(v.hide) {
-					$(v.hide).each(function() {
-						that._hide($(this), v.effect);
-					});
-				}
-			}
-		}
-		else {
-			if(i === that.element.val()) {
-				if(v.hide) {
-					$(v.hide).each(function() {
-						that._hide($(this), v.effect);
-					});
-				}
-				else if(that._init && v.show && !v.startHidden) {
-					$(v.show).each(function() {
-						that._show($(this), v.effect);
-					});
-				}
-			}
-			else {
-				if(v.show) {
-					$(v.show).each(function() {
-						that._show($(this), v.effect);
-					});
-				}
-				if(that._init && v.hide && v.startHidden) {
-					$(v.hide).each(function() {
-						that._hide($(this), v.effect);
-					});
-				}
-			}
-		}
 	};
 
 	ConditionsJS.prototype._show = function(element, effect) {
 		var that = this;
+
 		if(that._init) {
 			element.show();
 		}
@@ -265,10 +181,12 @@
 					break;
 			}
 		}
+
 	};
 
 	ConditionsJS.prototype._hide = function(element, effect) {
 		var that = this;
+		
 		if(that._init) {
 			element.hide();
 		}
@@ -285,22 +203,7 @@
 					break;
 			}
 		}
+
 	};
 
-	$.fn.conditions = function(args) {
-		return this.each( function(index, element) {
-			var conditions = new ConditionsJS(index, element, $.fn.conditions.defaults, args);
-			conditions.init();
-		});
-	};
-
-	$.fn.conditions.defaults = {
-		name:			null,
-		value:			null,
-		show:			null,
-		hide:			null,
-		effect:			'fade',
-		startHidden:	false,
-		reverse:		false
-	};
 }(jQuery));
