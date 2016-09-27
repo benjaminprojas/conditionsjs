@@ -108,7 +108,7 @@ $( 'select[name=example2]' ).conditions( [
 ## Condition Options
 
 Option | Example | Description
-:---: | --- | ---
+:---: | :---: | ---
 `element` | `'#id, select, [name=test]'` | Any jQuery element will do, this can be a select box, text field, checkbox, radio button, etc.
 `type` | `value` | Supported: `value`, `checked`. If set to value it will try to match the value of the element, if set to checked it will check if the element is selected.
 `operator` | `===` | The supported operators are dependent on the type you are using.  For `value`: `===`, `!==`, `array`, `!array`. For `checked`: `is`, `!is`.
