@@ -116,7 +116,7 @@ Option | Example | Description
 
 ## Actions Options
 
-Option  Description
+Option | Description
 :---: | ---
 `if` | This is an object or array of objects which each have two properties: `element` and `action`.  Set the element to another jQuery selector that will be shown or hidden based on the action when the condition is met.  Set the action to `show` or `hide`.
 `else` | Similar to `if`, except it will be triggered if the condition is NOT met.
