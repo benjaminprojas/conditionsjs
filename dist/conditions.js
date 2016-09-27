@@ -76,6 +76,8 @@
 
 			$.each(cond.conditions, function(i, c) {
 
+				c.element = $(c.element);
+
 				switch(c.type) {
 					case 'value':
 					case 'val':

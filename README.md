@@ -24,10 +24,21 @@ You can then initialize the conditions like this:
 ```js
 // Using an object
 $( 'input[name=example1]' ).conditions( {
-	show:        'div.example1',
-	hide:        'div.example1',
-	startHidden: true,
-	effect:      'fade'
+	conditions: {
+		element:	'select[name=example1]',
+		type:		'checked',
+		operator:	'is'
+	},
+	actions: {
+		if: {
+			element:	'div.example1',
+			action:		'show'
+		},
+		else: {
+			element:	'div.example1',
+			action:		'hide'
+		}
+	}
 } );
 ```
 
@@ -52,7 +63,7 @@ Then use the following code:
 $( 'select[name=example2]' ).conditions( [
 	{
 		conditions: {
-			element:	$('select[name=example2]'),
+			element:	'select[name=example2]',
 			type:		'value',
 			operator:	'=',
 			condition:	'1'
@@ -72,7 +83,7 @@ $( 'select[name=example2]' ).conditions( [
 	},
 	{
 		conditions: {
-			element:	$('select[name=example2]'),
+			element:	'select[name=example2]',
 			type:		'value',
 			operator:	'=',
 			condition:	'2'
@@ -94,14 +105,18 @@ $( 'select[name=example2]' ).conditions( [
 
 ```
 
-## Options
+## Condition Options
 
-Option  | Input | Description
+Option | Example | Description
 :---: | --- | ---
-`name`  | checkbox, radio, select, text | This differentiates between different elements if using a selector that includes a lot of different form elements.
-`value` | radio, select, text | Use this to tell ConditionsJS which value to use to trigger the conditions.  This is not used for checkboxes.
-`show` | checkbox, radio, select, text | This is a list of elements to show when the condition is triggered.
-`hide` | checkbox, radio, select, text | This is a list of elements to hide when the condition is triggered.
-`effect` | checkbox, radio, select, text | Default effect is `slide`. You can also use `appear` or `fade`.
-`reverse` | checkbox, text | This reverses the way that the condition is met.  On a checkbox, it will show the elements when the checkbox is UNchecked rather than when it is checked.
-`startHidden` | checkbox, radio, select, text | Forces the elements in `hide` to be hidden and does not show anything on page load. This works even if `reverse` is in use.  You will need to use this option even if you are using CSS to hide your elements as the JS will show hidden elements if the conditons are met.
+`element` | `'#id, select, [name=test]'` | Any jQuery element will do, this can be a select box, text field, checkbox, radio button, etc.
+`type` | `value` | Supported: `value`, `checked`. If set to value it will try to match the value of the element, if set to checked it will check if the element is selected.
+`operator` | `===` | The supported operators are dependent on the type you are using.  For `value`: `===`, `!==`, `array`, `!array`. For `checked`: `is`, `!is`.
+`condition` | If the type is `value`, you can set a string here that matches based on the operator.  If using `checked`, this option is not applicable.
+
+## Actions Options
+
+Option  Description
+:---: | ---
+`if` | This is an object or array of objects which each have two properties: `element` and `action`.  Set the element to another jQuery selector that will be shown or hidden based on the action when the condition is met.  Set the action to `show` or `hide`.
+`else` | Similar to `if`, except it will be triggered if the condition is NOT met.
