@@ -38,7 +38,8 @@ $( 'input[name=example1]' ).conditions( {
 			element:	'div.example1',
 			action:		'hide'
 		}
-	}
+	},
+	effect: 'fade'
 } );
 ```
 
@@ -79,7 +80,8 @@ $( 'select[name=example2]' ).conditions( [
 					action:		'hide'
 				}
 			]
-		}
+		},
+		effect: 'appear'
 	},
 	{
 		conditions: {
@@ -100,10 +102,15 @@ $( 'select[name=example2]' ).conditions( [
 				}
 			]
 		}
-	}
+	},
+	effect: 'slide'
 ] );
 
 ```
+
+## Effects
+
+You can send in an `effect` property to change the effect of show/hide.  Currently supported: `appear`, `slide` and `fade`.  The default option is `fade`.
 
 ## Condition Options
 
