@@ -160,6 +160,7 @@
 				break;
 			case 'hide':
 				that._hide($(condition.element), effect);
+				break;
 		}
 
 	};
