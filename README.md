@@ -25,18 +25,18 @@ You can then initialize the conditions like this:
 // Using an object
 $( 'input[name=example1]' ).conditions( {
 	conditions: {
-		element:	'select[name=example1]',
-		type:		'checked',
-		operator:	'is'
+		element:  'input[name=example1]',
+		type:     'checked',
+		operator: 'is'
 	},
 	actions: {
 		if: {
-			element:	'div.example1',
-			action:		'show'
+			element: 'div.example1',
+			action:  'show'
 		},
 		else: {
-			element:	'div.example1',
-			action:		'hide'
+			element: 'div.example1',
+			action:  'hide'
 		}
 	},
 	effect: 'fade'
@@ -64,20 +64,20 @@ Then use the following code:
 $( 'select[name=example2]' ).conditions( [
 	{
 		conditions: {
-			element:	'select[name=example2]',
-			type:		'value',
-			operator:	'=',
-			condition:	'1'
+			element:   'select[name=example2]',
+			type:      'value',
+			operator:  '=',
+			condition: '1'
 		},
 		actions: {
 			if: [
 				{
-					element:	'.example2-value1',
-					action:		'show'
+					element: '.example2-value1',
+					action:  'show'
 				},
 				{
-					element:	'.example2-value2',
-					action:		'hide'
+					element: '.example2-value2',
+					action:  'hide'
 				}
 			]
 		},
@@ -85,28 +85,56 @@ $( 'select[name=example2]' ).conditions( [
 	},
 	{
 		conditions: {
-			element:	'select[name=example2]',
-			type:		'value',
-			operator:	'=',
-			condition:	'2'
+			element:   'select[name=example2]',
+			type:      'value',
+			operator:  '=',
+			condition: '2'
 		},
 		actions: {
 			if: [
 				{
-					element:	'.example2-value2',
-					action:		'show'
+					element: '.example2-value2',
+					action:  'show'
 				},
 				{
-					element:	'.example2-value1',
-					action:		'hide'
+					element: '.example2-value1',
+					action:  'hide'
 				}
 			]
-		}
-	},
-	effect: 'slide'
+		},
+		effect: 'slide'
+	}
 ] );
-
 ```
+
+New in version 1.0.1 you can now match against multiple values, as in a select box that has the ability to check against multiple values. This doesn't change any functionality unless you want to match against ALL values. For example:
+
+```js
+$( 'select[name=example2]' ).conditions( {
+	conditions: {
+		element:   'select[name=example2]',
+		type:      'value',
+		operator:  'array',
+		condition: [ '1', '2' ],
+		multiple:  'all'
+	},
+	actions: {
+		if: [
+			{
+				element: '.example2-value1',
+				action:  'show'
+			},
+			{
+				element: '.example2-value2',
+				action:  'hide'
+			}
+		]
+	},
+	effect: 'appear'
+} );
+```
+
+This example would require both a `1` AND a `2` value to be present in the values array to trigger the action.
 
 ## Effects
 
